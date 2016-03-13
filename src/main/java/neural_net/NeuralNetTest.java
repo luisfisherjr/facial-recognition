@@ -6,6 +6,7 @@ public class NeuralNetTest {
 		
 		System.out.println("Hello World!");
 		System.out.println("lol");
+		System.out.println("lol2");
 		NeuralNet n = new NeuralNet();
 		n.initNet();
 		n.printNet();
