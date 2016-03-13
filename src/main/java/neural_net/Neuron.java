@@ -8,6 +8,7 @@ public class Neuron {
 	private ArrayList<Double> listOfWeightOut;
 
 	// give up andrew
+	
 	public double initNeuron() {
 		double randDouble  = Math.random();
 		
