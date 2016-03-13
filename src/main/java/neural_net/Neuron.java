@@ -7,7 +7,7 @@ public class Neuron {
 	private ArrayList<Double> listOfWeightIn;
 	private ArrayList<Double> listOfWeightOut;
 
-	// may need to edit
+	// update to normal constructors
 	public double initNeuron() {
 		double randDouble  = Math.random();
 		
