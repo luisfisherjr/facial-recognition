@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public abstract class Layer {
 
+	// should we pass the matrix to the layer?
+	// that is basically the way it is done in class instead of making a bunch of copies..
+	
 	private ArrayList<Neuron> listOfNeurons;
 	private int numberOfNeuronsInLayer;
 	

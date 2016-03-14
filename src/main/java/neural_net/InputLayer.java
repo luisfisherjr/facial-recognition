@@ -1,10 +1,12 @@
 package neural_net;
 
+import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
+
 public class InputLayer extends Layer {
 	
 	// alter
-	public InputLayer  initLayer(InputLayer inputLayer) {
-		return null;
+	public InputLayer (BlockRealMatrix input) {
 	}
 	
 	// alter
