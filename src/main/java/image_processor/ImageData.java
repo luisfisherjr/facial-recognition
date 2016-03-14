@@ -5,11 +5,15 @@ import java.util.List;
 
 public class ImageData {
 	private List<Integer> RGB = new ArrayList<Integer>();
-	private boolean isFace;
+	private double isFace;
 	
 	public ImageData(List<Integer> RGBIn, boolean isFaceIn){
 		this.RGB = RGBIn;
-		this.isFace = isFaceIn;
+		if(isFaceIn){
+			this.isFace = 1.0;
+		}
+		else
+			this.isFace = 0.0;
 	}
 	
 	public List<Integer> getRGB() {
@@ -18,10 +22,10 @@ public class ImageData {
 	public void setRGB(List<Integer> rGB) {
 		RGB = rGB;
 	}
-	public boolean isFace() {
+	public double isFace() {
 		return isFace;
 	}
-	public void setFace(boolean isFace) {
+	public void setFace(double isFace) {
 		this.isFace = isFace;
 	}
 }
