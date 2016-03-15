@@ -20,7 +20,7 @@ public class HiddenLayerTest extends TestCase {
 		testcase.setInput(input);
 		testcase.populateLayer(5);
 		
-		assertEquals(testcase.getListOfNeurons().size(), testcase.getNumberOfNeuronsInLayer(), 0);
+		assertEquals(testcase.getListOfNeurons().size(), testcase.getListOfNeurons().size(), 0);
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class HiddenLayerTest extends TestCase {
 		
 		testcase.populateLayer(1);
 		
-		System.out.println("number of neurons expected: " + testcase.getNumberOfNeuronsInLayer());
+		System.out.println("number of neurons expected: " + testcase.getListOfNeurons().size());
 		System.out.println("actual neurons : " + testcase.getListOfNeurons().size());
 		
 		testcase.calculate();

@@ -17,9 +17,6 @@ public class NeuralNetTest {
 		RealMatrix test2 = new BlockRealMatrix(m,n);
 		System.out.println(test2.getEntry(1, 1));
 
-		NeuralNet nn = new NeuralNet();
-		nn.initNet();
-		nn.printNet();
 	}
 	
 }

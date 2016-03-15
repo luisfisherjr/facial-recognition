@@ -2,11 +2,14 @@
 package neural_net;
 
 import java.util.ArrayList;
+
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
-public class HiddenLayer extends Layer {
 
+public class HiddenLayer implements Layer {
+	private ArrayList<Neuron> neurons;
+	
 	// alter
 	public HiddenLayer() {
 		
@@ -83,5 +86,50 @@ public class HiddenLayer extends Layer {
 	
 	// alter
 	public void printLayer(ArrayList<HiddenLayer> listOfHiddenLayer) {
+	}
+
+	public ArrayList<Neuron> getNeurons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setNeurons(ArrayList<Neuron> listOfNeurons) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public OutputLayer generateOutputLayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RealMatrix getInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RealMatrix getOutput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Neuron> getListOfNeurons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setInput(RealMatrix input) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setOutput(RealMatrix output) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setListOfNeurons(ArrayList<Neuron> listOfNeurons) {
+		// TODO Auto-generated method stub
+		
 	}
 }
