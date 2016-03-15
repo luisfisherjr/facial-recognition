@@ -17,6 +17,10 @@ public class HiddenLayer implements Layer {
 		
 	}
 	
+	public HiddenLayer(RealMatrix matrix){
+		
+	}
+	
 	/*
 	 * creates a hidden layer with n neurons with f random weights
 	 * were f is the number of columns in the input matrix

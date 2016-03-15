@@ -3,6 +3,7 @@ package neural_net;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 
 /*
  * InputLayer:  # of neurons in inputLayer is # of columns in trainingData
@@ -14,23 +15,18 @@ public class NeuralNet {
 	private List<HiddenLayer> hiddenLayers;
 	private OutputLayer outputLayer;
 
-	public NeuralNet(BlockRealMatrix trainingData, BlockRealMatrix labels) {
+	public NeuralNet(RealMatrix trainingData, RealMatrix labels) {
 		inputLayer = new InputLayer(trainingData);
 		
-		
-		hiddenLayers = new ArrayList<HiddenLayer>();
-		
 		//Currently only one hidden layer.  subject to change?
-		hiddenLayers.add(inputLayer.generateHiddenLayer()); 
+		hiddenLayers = new ArrayList<HiddenLayer>();
+		hiddenLayers.add(new HiddenLayer(inputLayer.getOutput())); 
+		
 		HiddenLayer lastHiddenLayer = hiddenLayers.get(hiddenLayers.size()-1);
-		
-		
-		outputLayer = lastHiddenLayer.generateOutputLayer();
-		
-		
+		outputLayer = new OutputLayer(lastHiddenLayer.getOutput());
 	}
 	
-	public void printNet() {
-		
+	public void printResult() {
+		System.out.println(outputLayer.getHypothesis());
 	}
 }
