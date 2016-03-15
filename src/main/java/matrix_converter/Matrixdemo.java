@@ -12,6 +12,7 @@ public class Matrixdemo {
 	double[][] matrix = {{1,1}, {2.2}};
 	RealMatrix n = MatrixUtils.createRealMatrix(matrix);
 	
+	@SuppressWarnings("unused")
 	public static void main( String[] args )
     {
 		//see ImageDemo on usage of ImageParser & ImageData
