@@ -9,6 +9,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 public class HiddenLayer implements Layer {
 	private ArrayList<Neuron> neurons;
+	private RealMatrix input;
+	private RealMatrix output;
 	
 	// alter
 	public HiddenLayer() {
@@ -83,18 +85,31 @@ public class HiddenLayer implements Layer {
 		}
 		return matrix;
 	}
-	
-	// alter
-	public void printLayer(ArrayList<HiddenLayer> listOfHiddenLayer) {
+
+	public RealMatrix getInput() {
+		return input;
 	}
 
-	public ArrayList<Neuron> getNeurons() {
-		// TODO Auto-generated method stub
-		return null;
+	public RealMatrix getOutput() {
+		return output;
 	}
 
-	public void setNeurons(ArrayList<Neuron> listOfNeurons) {
-		// TODO Auto-generated method stub
+	public ArrayList<Neuron> getListOfNeurons() {
+		return neurons;
+	}
+
+	public void setInput(RealMatrix input) {
+		this.input = input;
+		
+	}
+
+	public void setOutput(RealMatrix output) {
+		this.output = output;
+		
+	}
+
+	public void setListOfNeurons(ArrayList<Neuron> listOfNeurons) {
+		this.neurons = listOfNeurons;
 		
 	}
 
@@ -102,34 +117,5 @@ public class HiddenLayer implements Layer {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public RealMatrix getInput() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public RealMatrix getOutput() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ArrayList<Neuron> getListOfNeurons() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setInput(RealMatrix input) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setOutput(RealMatrix output) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setListOfNeurons(ArrayList<Neuron> listOfNeurons) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

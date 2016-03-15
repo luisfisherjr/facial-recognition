@@ -6,12 +6,34 @@ import java.util.ArrayList;
 
 public class Neuron {
 
-	// thetas.setRow requires double[] so saved weights as double[]
-	// currently the input and output is stored in the layer
-	// the weights "thetas" are the only things being used at the Neuron level
-	// calculation is done at layer level with layer storing the input and output
+	// will eventually requires sigmoid function, sumation (rows * weights)
 	
+	// we need to decide on basic data structures
 	private RealMatrix input;
+	public RealMatrix getInput() {
+		return input;
+	}
+
+	public void setInput(RealMatrix input) {
+		this.input = input;
+	}
+
+	public double[] getWeights() {
+		return weights;
+	}
+
+	public void setWeights(double[] weights) {
+		this.weights = weights;
+	}
+
+	public double[] getOutput() {
+		return output;
+	}
+
+	public void setOutput(double[] output) {
+		this.output = output;
+	}
+
 	private double[] weights;
 	private double[] output;
 
@@ -23,27 +45,5 @@ public class Neuron {
 	public Neuron(double bias) {
 	}
 
-	public RealMatrix getInput() {
-		return input;
-	}
 	
-	public double[] getOutput() {
-		return output;
-	}
-	
-	public double[] getWeights() {
-		return weights;
-	}
-	
-	public void setInput(BlockRealMatrix input) {
-		this.input = input;
-	}
-	
-	public void setWeights(double[] weights) {
-		this.weights = weights;
-	}
-	
-	public void setOutput(double[] output) {
-		this.output = output;
-	}
 }

@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 
 public class HiddenLayerTest extends TestCase {
 
-	
 	@Test
 	public void testPopulateLayerNeuronCount() {
 

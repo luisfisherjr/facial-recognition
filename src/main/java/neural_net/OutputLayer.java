@@ -15,7 +15,7 @@ public class OutputLayer implements Layer {
 	public OutputLayer(HiddenLayer hiddenLayer) {
 		neurons = new ArrayList<Neuron>();
 		
-		List<Neuron> inputLayer = hiddenLayer.getNeurons();
+		List<Neuron> inputLayer = hiddenLayer.getListOfNeurons();
 		
 		thetas = new BlockRealMatrix(inputLayer.size()+1, 1);
 		thetas.addToEntry(0, 0, 1);			// bias unit

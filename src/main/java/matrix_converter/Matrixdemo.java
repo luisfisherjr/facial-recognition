@@ -17,7 +17,7 @@ public class Matrixdemo {
     {
 		//see ImageDemo on usage of ImageParser & ImageData
 		
-		String filePath = "C:/Users/luisf/Desktop/jarvis";
+		String filePath = "C:/Users/ImageFolder/faces";
 		ImageParser parser = new ImageParser(filePath, true);
 		List<ImageData> imageDataList = parser.getImageDataList();
 	
