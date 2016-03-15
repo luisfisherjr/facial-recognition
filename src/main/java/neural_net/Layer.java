@@ -12,4 +12,14 @@ public interface Layer {
 	public void setInput(RealMatrix input);
 	public void setOutput(RealMatrix output);
 	public void setListOfNeurons(ArrayList<Neuron> listOfNeurons);
+	
+	
+	// I think we need these methods...
+	/*
+	public RealMatrix getThetas();
+	public RealMatrix getX();
+	
+	public void setThetas(RealMatrix thetas);
+	public void setX(RealMatrix x);
+	*/
 }

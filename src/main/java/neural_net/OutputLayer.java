@@ -13,8 +13,12 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 public class OutputLayer implements Layer {
 	private ArrayList<Neuron> neurons;
+
 	private RealMatrix input;
 	private RealMatrix output;
+	
+	private RealMatrix x;
+	private RealMatrix thetas;
 	
 	public OutputLayer(RealMatrix realMatrix) {
 		
@@ -34,6 +38,24 @@ public class OutputLayer implements Layer {
 		return input;
 	}
 
+	public RealMatrix getX() {
+		return x;
+	}
+
+
+	public void setX(RealMatrix x) {
+		this.x = x;
+	}
+
+
+	public RealMatrix getThetas() {
+		return thetas;
+	}
+
+
+	public void setThetas(RealMatrix thetas) {
+		this.thetas = thetas;
+	}
 
 	public RealMatrix getOutput() {
 		return output;

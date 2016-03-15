@@ -11,6 +11,9 @@ public class HiddenLayer implements Layer {
 	private ArrayList<Neuron> neurons;
 	private RealMatrix input;
 	private RealMatrix output;
+
+	private RealMatrix x;
+	private RealMatrix thetas;
 	
 	// alter
 	public HiddenLayer() {
@@ -116,10 +119,21 @@ public class HiddenLayer implements Layer {
 		this.neurons = listOfNeurons;
 		
 	}
+	
+	public RealMatrix getX() {
+		return x;
+	}
 
-	public OutputLayer generateOutputLayer() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setX(RealMatrix x) {
+		this.x = x;
+	}
+
+	public RealMatrix getThetas() {
+		return thetas;
+	}
+
+	public void setThetas(RealMatrix thetas) {
+		this.thetas = thetas;
 	}
 	
 }

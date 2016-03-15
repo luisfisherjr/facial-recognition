@@ -13,9 +13,18 @@ import org.apache.commons.math3.linear.RealMatrix;
 public class NeuralNet {
 	private InputLayer inputLayer;
 	private List<HiddenLayer> hiddenLayers;
+	public List<HiddenLayer> getHiddenLayers() {
+		return hiddenLayers;
+	}
+
+
+	public void setHiddenLayers(List<HiddenLayer> hiddenLayers) {
+		this.hiddenLayers = hiddenLayers;
+	}
+
 	private OutputLayer outputLayer;
 
-	public NeuralNet(RealMatrix trainingData, RealMatrix labels) {
+	public NeuralNet(RealMatrix trainingData) {
 		inputLayer = new InputLayer(trainingData);
 		
 		//Currently only one hidden layer.  subject to change?
@@ -26,7 +35,12 @@ public class NeuralNet {
 		outputLayer = new OutputLayer(lastHiddenLayer.getOutput());
 	}
 	
-	public void printResult() {
-		System.out.println(outputLayer.getHypothesis());
+	
+	public List<Double> getHypothesis() {
+		return outputLayer.getHypothesis();
+	}
+	
+	public OutputLayer getOutputLayer() {
+		return outputLayer;
 	}
 }

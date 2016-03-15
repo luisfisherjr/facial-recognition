@@ -11,7 +11,7 @@ public class InputLayer implements Layer {
 	
 	
 	// alter
-	public InputLayer (RealMatrix trainingData) {
+	public InputLayer (RealMatrix x) {
 	}
 	
 	// alter
