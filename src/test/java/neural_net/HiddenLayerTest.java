@@ -28,6 +28,9 @@ public class HiddenLayerTest extends TestCase {
 		HiddenLayer testcase= new HiddenLayer();
 		
 		double[][] d = {{1,2,3},{4,5,6},{7,8,9}};
+		// alternate input
+		//double[][] d = {{1,2,3}};
+		
 		RealMatrix input = new BlockRealMatrix(d);
 		
 		testcase.setInput(input);
@@ -65,9 +68,7 @@ public class HiddenLayerTest extends TestCase {
 		System.out.println("]");
 		System.out.println("Shape of output: " + rowCount + " x " + colCount);
 		
-		// failed on purpose until we discuss if output should be a column or row
-		// i am confused @.@
-		assertTrue(false);
+		// if a row is an image, the number of outputs is the same as number of rows
+		assertTrue(testcase.getListOfNeurons().get(0).getWeights().length == testcase.getInput().getRowDimension());
 	}
-	
 }

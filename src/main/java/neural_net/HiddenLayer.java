@@ -12,16 +12,18 @@ public class HiddenLayer implements Layer {
 	private RealMatrix input;
 	private RealMatrix output;
 
+	// X is the same as input matrix, this is a redundancy
 	private RealMatrix x;
 	private RealMatrix thetas;
 	
-	// alter
+	// must set input matrix before populateLayer
 	public HiddenLayer() {
 		
 	}
 	
+	// can use populateLayer input layer is set as matrix
 	public HiddenLayer(RealMatrix matrix){
-		
+		input = matrix;
 	}
 	
 	/*
@@ -64,7 +66,7 @@ public class HiddenLayer implements Layer {
 		
 		BlockRealMatrix thetas = new BlockRealMatrix(rows, cols);
 		
-		// populates thetas from neuron weights list
+		// populates thetas matrix from neuron weights list
 		for(int i = 0; i < rows;i++) {
 			
 			thetas.setRow(i, getListOfNeurons().get(i).getWeights());
@@ -73,10 +75,10 @@ public class HiddenLayer implements Layer {
 		// confused on what output shape of layer should be
 		
 		// shape of output matrix is :  neuronInLayer x columns matrix 
-		setOutput(sigmoid(thetas).multiply(getInput()));
+		// setOutput(sigmoid(thetas).multiply(getInput()));
 		
 		// shape of output matrix is : columns x neuronInLayer
-		// setOutput(sigmoid(getInput().multiply(thetas.transpose())));
+		 setOutput(sigmoid(getInput().multiply(thetas.transpose())));
 	}
 	
 	public RealMatrix sigmoid(RealMatrix matrix) {
