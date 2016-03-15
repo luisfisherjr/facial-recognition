@@ -29,7 +29,7 @@ public class ImageDemo {
 				System.out.println(value);
 			}
 			*/
-			System.out.println("Does this image contain a face? " + data.isFace());
+			System.out.println("Does this image contain a face? " + data.getIsFace());
 		}
     }
 }

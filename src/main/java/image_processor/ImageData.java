@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageData {
-	private List<Integer> RGB = new ArrayList<Integer>();
+	private List<Double> RGB = new ArrayList<Double>();
 	private double isFace;
 	
-	public ImageData(List<Integer> RGBIn, boolean isFaceIn){
+	public ImageData(List<Double> RGBIn, boolean isFaceIn){
 		this.RGB = RGBIn;
 		if(isFaceIn){
 			this.isFace = 1.0;
@@ -16,13 +16,13 @@ public class ImageData {
 			this.isFace = 0.0;
 	}
 	
-	public List<Integer> getRGB() {
+	public List<Double> getRGB() {
 		return RGB;
 	}
-	public void setRGB(List<Integer> rGB) {
+	public void setRGB(List<Double> rGB) {
 		RGB = rGB;
 	}
-	public double isFace() {
+	public double getIsFace() {
 		return isFace;
 	}
 	public void setFace(double isFace) {

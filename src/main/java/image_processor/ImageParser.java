@@ -36,7 +36,7 @@ public class ImageParser {
 		
 	}
 	
-	public void processImage(String pathIn){
+	private void processImage(String pathIn){
 		
 		try {
 			BufferedImage imgOriginal = ImageIO.read(new File(pathIn));
@@ -46,11 +46,11 @@ public class ImageParser {
 			g.dispose();
 
 			int[][] fullPixels = new int [img.getHeight()] [img.getWidth()];
-			List<Integer> result = new ArrayList<Integer>();
+			List<Double> result = new ArrayList<Double>();
 			for (int row = 0; row < img.getHeight(); row ++){
 				for (int col = 0; col < img.getWidth(); col++){
 					fullPixels[row][col] = img.getRGB(col, row);
-					int value = img.getRGB(col, row);
+					double value = img.getRGB(col, row);
 					result.add(value);
 
 				}
