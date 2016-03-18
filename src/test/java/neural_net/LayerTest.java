@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
-public class HiddenLayerTest extends TestCase {
+public class LayerTest extends TestCase {
 
 	@Test
 	public void testPopulateLayerNeuronCount() {
@@ -36,7 +36,6 @@ public class HiddenLayerTest extends TestCase {
 		
 		testcase.calculate();
 		
-		
 		// should the output be a n x 1 or 1 x n?
 		// mess with line 61-67 of hiddenlayer
 		System.out.println("matrix out: ");
@@ -63,5 +62,3 @@ public class HiddenLayerTest extends TestCase {
 		assertTrue(testcase.getListOfNeurons().get(0).getWeights().length == testcase.getX().getRowDimension());
 	}
 }
-
-
