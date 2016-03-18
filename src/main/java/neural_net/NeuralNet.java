@@ -19,11 +19,17 @@ public class NeuralNet {
 	// hidden layers and output layer
 	private ArrayList<Layer> hiddenLayers;
 	
-	// must have atleast 1 hidden layer
-	// later take in a int[] of length[hiddenCount] with values = number of neurons per layer
-	public NeuralNet(RealMatrix trainingX, int hiddenCount, double[] trainingY) {
+	/*
+	 *Parameters:
+	 *trainingX: Feature Matrix
+	 *hiddenCount: Number of Hidden Layers
+	 *neuronsPerHiddenLayer: Number of Neurons per hidden layer
+	 *trainingY: Labels
+	 */
+	public NeuralNet(RealMatrix trainingX, int hiddenCount, int[] neuronsPerHiddenLayer, double[] trainingY) {
 		
-		// this.trainingX = trainingX;
+		if (neuronsPerHiddenLayer.length != hiddenCount) System.exit(1);
+		
 		double[][] in = new double[1][trainingY.length];
 		in[0] = trainingY;
 
@@ -32,9 +38,11 @@ public class NeuralNet {
 		hiddenLayers = new ArrayList<Layer>();
 		
 		int i = 0;
+		
+	
 		for (; i < hiddenCount; i++ ) {
-			if (i == 0) hiddenLayers.add(new Layer(trainingX, 5, true));
-			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 5, true));
+			if (i == 0) hiddenLayers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
+			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
 		}
 		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));
 		
@@ -61,44 +69,61 @@ public class NeuralNet {
 	
 	public void backwardPropagation() {
 		
-		int layerSize = hiddenLayers.size() - 1;
+		int L = hiddenLayers.size() - 1;
 		
 		double[][] delta;
-		
-		for(int index = layerSize; index >= 0; index--) {
+
+		for(int index = L, count = 0; index >= 0; index--, count++) {
 			
-			if (index == layerSize ) {
-				                                                 // break point trying to tranpose        @.@
-				hiddenLayers.get(layerSize).setDelta(hiddenLayers.get(index).getA().subtract(trainingY).transpose());
+			if (index == L ) {                                                
+				hiddenLayers.get(index).setDelta(hiddenLayers.get(index).getA().subtract(trainingY));
+				
+				// for testing
+				System.out.println("L");
+				printDimensionA(index);
+				printDimensionY();
+				printDimensionDelta(index);
 			}
 			else {
-				printThetas(index);
-				printD(index + 1);
-				                                         
-				delta = hiddenLayers.get(index).getThetas().transpose().
+				
+				// for testing
+				System.out.println();
+				System.out.println("L - " + count);
+				printDimensionThetas(index + 1);
+				printDimensionDelta(index + 1);
+				printDimensionA(index);
+				
+				
+				/*changing getThetas.tranpose() to getThetas() fixed it @.@ not sure why and I'm not sure
+				 * it is a legit fix*/
+				delta = (hiddenLayers.get(index + 1).getThetas()).
 						multiply(hiddenLayers.get(index + 1).getDelta()).getData();
-				                                          
+				                     
+				
+				
 				double[][] a = hiddenLayers.get(index).getA().getData();
 				
-				for(int i = 0; i < delta[0].length; i++) {
-					for(int j = 0; j < delta.length; j++) {
-						delta[j][i] = delta[j][i] * a[j][i] * (1 - a[j][i]);
+				for(int i = 0; i < delta.length; i++) {
+					for(int j = 0; j < delta[0].length; j++) {
+						delta[i][j] = delta[i][j] * a[i][j] * (1 - a[i][j]);
 					}
 				}
 				
 				hiddenLayers.get(index).setDelta(MatrixUtils.createRealMatrix(delta));
 				
-				if (index == (layerSize - 1)) {                       // transposed @.@
-					bigDelta = hiddenLayers.get(index + 1).getDelta().transpose().
-							multiply(hiddenLayers.get(index).getA().transpose());
-							
-							
-				}
-				if (index < (layerSize - 1)) {
-					bigDelta = bigDelta.add(hiddenLayers.get(index + 1).getDelta().
-							multiply(hiddenLayers.get(index).getA().transpose()));				
-				}
+				// for testing
+				printDimensionDelta(index);
 				
+				// I am not sure how bigDelta is suppose to accumulate need help
+				
+				if (index == (L - 1)) {
+					bigDelta = hiddenLayers.get(index + 1).getDelta().
+							multiply(hiddenLayers.get(index).getA().transpose());			
+				}
+				if (index < (L - 1)) {
+				//	bigDelta = bigDelta.add(hiddenLayers.get(index + 1).getDelta().
+				//			multiply(hiddenLayers.get(index).getA().transpose()));				
+				}
 			}	
 		}
 	}
@@ -179,5 +204,30 @@ public class NeuralNet {
 		System.out.println("]");
 		System.out.println("Shape of output: " + rowCount + " x " + colCount);
 
+	}
+	
+	public void printDimensionA(int index) {
+		System.out.println("a^" + index + " : (" + hiddenLayers.get(index).getA().getRowDimension() + 
+				", " + hiddenLayers.get(index).getA().getColumnDimension() + ")");
+	}
+	
+	public void printDimensionThetas(int index) {
+		System.out.println("t^" + index + " : (" + hiddenLayers.get(index).getThetas().getRowDimension() + 
+				", " + hiddenLayers.get(index).getThetas().getColumnDimension() + ")");
+	}
+	
+	public void printDimensionDelta(int index) {
+		System.out.println("d^" + index + " : (" + hiddenLayers.get(index).getDelta().getRowDimension() + 
+				", " + hiddenLayers.get(index).getDelta().getColumnDimension() + ")");
+	}
+	
+	public void printDimensionX(int index) {
+		System.out.println("x^" + index + " : (" + hiddenLayers.get(index).getX().getRowDimension() + 
+				", " + hiddenLayers.get(index).getX().getColumnDimension() + ")");
+	}
+	
+	public void printDimensionY() {
+		System.out.println("y   : (" + trainingY.getRowDimension() + 
+				", " + trainingY.getColumnDimension() + ")");
 	}
 }

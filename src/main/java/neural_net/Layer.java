@@ -69,7 +69,7 @@ public class Layer {
 
 		BlockRealMatrix thetas = new BlockRealMatrix(rows, cols);
 
-		for(int i = 0; i < cols;i++) {
+		for(int i = 0; i < cols; i++) {
 
 			thetas.setColumn(i, getListOfNeurons().get(i).getWeights());
 		}

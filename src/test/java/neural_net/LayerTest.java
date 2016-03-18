@@ -20,25 +20,18 @@ public class LayerTest extends TestCase {
 		assertEquals(4, testcase.getListOfNeurons().size(), 0);
 		assertEquals(3, testcase.getListOfNeurons().get(0).getWeights().length, 0);
 		
-		//3 x 6
-		
 	}
 
 	@Test
-	public void testCalculate() {
+	public void testCalculateHiddenLayer() {
 
 		double[][] d = {{1,2,3},{4,5,6},{7,8,9}};
 		RealMatrix input = MatrixUtils.createRealMatrix(d);
-		Layer testcase= new Layer(input, 1, false);
-		
-		System.out.println("number of neurons expected: " + testcase.getListOfNeurons().size());
-		System.out.println("actual neurons : " + testcase.getListOfNeurons().size());
-		
+		Layer testcase= new Layer(input, 5, true);
+
 		testcase.calculate();
 		
-		// should the output be a n x 1 or 1 x n?
-		// mess with line 61-67 of hiddenlayer
-		System.out.println("matrix out: ");
+		System.out.println("matrix a: ");
 		int rowCount = 0;
 		int colCount = 0;
 		System.out.println("[");
@@ -56,9 +49,44 @@ public class LayerTest extends TestCase {
 		}
 		
 		System.out.println("]");
-		System.out.println("Shape of output: " + rowCount + " x " + colCount);
+		System.out.println("Shape (" + rowCount + ", " + colCount+ ")");
 		
 		// if a row is an image, the number of outputs is the same as number of rows
-		assertTrue(testcase.getListOfNeurons().get(0).getWeights().length == testcase.getX().getRowDimension());
+		assertTrue(testcase.getListOfNeurons().get(0).getWeights().length == testcase.getA().getColumnDimension());
+		assertTrue(testcase.getListOfNeurons().size() == testcase.getA().getRowDimension());
+	}
+	
+	@Test
+	public void testCalculateOutputLayer() {
+
+		double[][] d = {{1,2,3},{4,5,6},{7,8,9}};
+		RealMatrix input = MatrixUtils.createRealMatrix(d);
+		Layer testcase= new Layer(input, 1, false);
+
+		testcase.calculate();
+		
+		System.out.println("matrix a: ");
+		int rowCount = 0;
+		int colCount = 0;
+		System.out.println("[");
+		for (double[] row: testcase.getA().getData()) {
+			rowCount++;
+			System.out.print("[");
+		for(double num: row) {
+			if (rowCount == 1) {
+				colCount++;
+			}
+			System.out.print(num + " ");
+			}
+		
+		System.out.println("]");
+		}
+		
+		System.out.println("]");
+		System.out.println("Shape (" + rowCount + ", " + colCount+ ")");
+		
+		// if a row is an image, the number of outputs is the same as number of rows
+		assertTrue(testcase.getListOfNeurons().get(0).getWeights().length == testcase.getA().getColumnDimension());
+		assertTrue(testcase.getListOfNeurons().size() == testcase.getA().getRowDimension());
 	}
 }

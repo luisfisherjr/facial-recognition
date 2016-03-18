@@ -33,7 +33,9 @@ public class NeuralNetTest {
 	}
 	@Test
 	public void testForwardPropagation() {
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 2, training_y);
+
+		int[] neurons = {7,4,10};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 3, neurons, training_y);
 	
 		net.forwardPropagation();
 	
