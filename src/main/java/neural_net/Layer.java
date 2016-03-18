@@ -77,6 +77,7 @@ public class Layer {
 		this.thetas = thetas;
 
 		setA(sigmoid((thetas.transpose()).multiply(x)));
+		
 	}
 
 	public RealMatrix sigmoid(RealMatrix matrix) {

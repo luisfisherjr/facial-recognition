@@ -44,9 +44,8 @@ public class NeuralNet {
 			if (i == 0) hiddenLayers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
 			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
 		}
-		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));
+		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));		
 		
-		train();
 	}
 	
 	public ArrayList<Layer> getHiddenLayers() {
@@ -128,10 +127,53 @@ public class NeuralNet {
 		}
 	}
 
-	public void train() {	
+	
+	
+	/*
+	 *Trains Neural Net with given Features & Labels
+	 *Parameters:
+	 *passes: Max number of loops
+	 *tolerance: How far difference is from actual results
+	 *Note: work in progress
+	 */
+	public void train(int passes, double tolerance) {
+		
+		double totalDifference = 1;
+		
+		for(int count = 0; (count < passes) && (tolerance <= totalDifference); count++) {
+		
+		backwardPropagation();
+		
+		// just place holder
+		totalDifference -= .001;
+		
+		forwardPropagation();
+		}
 	}
 
-	public void predict(RealMatrix x) {
+	/*
+	 *Trains Neural Net with given Features & Labels
+	 *Parameters: 
+	 *x: test set of features
+	 *Return: double[] of predicted Labels
+	 *Note: current threshold is .5
+	 */
+	public double[] predict(RealMatrix x) {
+		
+		getHiddenLayers().get(0).setX(x);
+		forwardPropagation();
+		
+		double[] labels = getHiddenLayers().get(getHiddenLayers().size() - 1).getA().getRow(0);
+		
+		for(double d: labels) {
+			if (d > .5) d = 1;
+			else d = 0;
+		}
+		return labels;
+	}
+	
+	public void precisionScore(double[] yTraining, double[] yPredicted) {
+		// basically just compare the two
 	}
 	
 	public void printA(int index) {

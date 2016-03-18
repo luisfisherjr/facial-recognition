@@ -42,6 +42,16 @@ public class NeuralNetTest {
 		net.backwardPropagation();
 	}
 	
+	
+	@Test
+	public void testTrain() {
+
+		int[] neurons = {2,5,10,3,8,2};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
+	
+		net.train(100, .001);
+	}
+	
 	/*
 	 * Writing some tests from "Examples and intuitions I" from course era slides
 	 * 
