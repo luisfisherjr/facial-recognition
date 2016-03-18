@@ -48,8 +48,11 @@ public class NeuralNet {
 	
 	public void forwardPropagation() {
 		
-		for (Layer l: hiddenLayers) {
-			l.calculate();
+		hiddenLayers.get(0).calculate();
+			
+		for (int i = 1; i < hiddenLayers.size(); i++) {
+			hiddenLayers.get(i).setX(hiddenLayers.get(i - 1).getA());
+			hiddenLayers.get(i).calculate();
 		}
 	}
 	

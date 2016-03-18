@@ -1,8 +1,5 @@
 package neural_net;
-import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
-
-import java.util.ArrayList;
 
 public class Neuron {
 
