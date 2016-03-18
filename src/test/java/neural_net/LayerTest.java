@@ -29,7 +29,7 @@ public class LayerTest extends TestCase {
 
 		double[][] d = {{1,2,3},{4,5,6},{7,8,9}};
 		RealMatrix input = MatrixUtils.createRealMatrix(d);
-		Layer testcase= new Layer(input, 1, true);
+		Layer testcase= new Layer(input, 1, false);
 		
 		System.out.println("number of neurons expected: " + testcase.getListOfNeurons().size());
 		System.out.println("actual neurons : " + testcase.getListOfNeurons().size());

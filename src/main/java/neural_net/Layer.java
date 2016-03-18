@@ -130,10 +130,16 @@ public class Layer {
 	}
 	
 	public void setDelta(RealMatrix delta) {
+//		if ((delta.getColumnDimension() > 1) == false)
+//			delta = delta.transpose();
+//		
 		this.delta = delta;
 	}
 	
 	public RealMatrix getDelta() {
+//		if ((delta.getColumnDimension() > 1) == false)
+//			delta = delta.transpose();
+//		
 		return delta;
 	}
 	

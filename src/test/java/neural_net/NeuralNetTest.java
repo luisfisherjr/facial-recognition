@@ -12,15 +12,39 @@ import org.junit.Test;
 
 
 public class NeuralNetTest {
+	double[][] training_x;
+	double[] training_y;
+	
 	@Before
 	public void setUp() {
+		training_x = new double[3][3];
+		training_y = new double[3];
+		
+		
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				training_x[i][j] = i * j;
+			}
+			training_y[i] = i;
+		}
+		
+		
 		//TODO
+	}
+	@Test
+	public void testForwardPropagation() {
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 2, training_y);
+	
+		net.forwardPropagation();
+	
+		net.backwardPropagation();
 	}
 	
 	/*
 	 * Writing some tests from "Examples and intuitions I" from course era slides
 	 * 
 	 */
+	/*
 	@Test
 	public void andTest1() {
 		double[][] xArray = new double[3][1];
@@ -237,5 +261,5 @@ public class NeuralNetTest {
 		NeuralNet net = new NeuralNet(x);
 		// assertEquals(net.getHypothesis(), 1);
 		// uhhh I give up for now.
-	}
+	}*/
 }

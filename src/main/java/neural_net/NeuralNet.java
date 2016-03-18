@@ -13,6 +13,9 @@ public class NeuralNet {
 	
 	private RealMatrix trainingY;
 	
+	// accumulator
+	private RealMatrix bigDelta;
+	
 	// hidden layers and output layer
 	private ArrayList<Layer> hiddenLayers;
 	
@@ -30,8 +33,8 @@ public class NeuralNet {
 		
 		int i = 0;
 		for (; i < hiddenCount; i++ ) {
-			if (i == 0) hiddenLayers.add(new Layer(trainingX, 3, true));
-			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 3, true));
+			if (i == 0) hiddenLayers.add(new Layer(trainingX, 5, true));
+			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 5, true));
 		}
 		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));
 		
@@ -60,28 +63,42 @@ public class NeuralNet {
 		
 		int layerSize = hiddenLayers.size() - 1;
 		
-		//RealMatrix deltaAccum = null;
 		double[][] delta;
 		
 		for(int index = layerSize; index >= 0; index--) {
 			
 			if (index == layerSize ) {
-				hiddenLayers.get(layerSize).setDelta(hiddenLayers.get(index).getA().subtract(trainingY));
+				                                                 // break point trying to tranpose        @.@
+				hiddenLayers.get(layerSize).setDelta(hiddenLayers.get(index).getA().subtract(trainingY).transpose());
 			}
 			else {
-				
+				printThetas(index);
+				printD(index + 1);
+				                                         
 				delta = hiddenLayers.get(index).getThetas().transpose().
-						multiply(hiddenLayers.get(layerSize + 1).getDelta()).getData();
-				
+						multiply(hiddenLayers.get(index + 1).getDelta()).getData();
+				                                          
 				double[][] a = hiddenLayers.get(index).getA().getData();
 				
 				for(int i = 0; i < delta[0].length; i++) {
 					for(int j = 0; j < delta.length; j++) {
-						delta[i][j] = delta[i][j] * a[i][j] * (1 - a[i][j]);
+						delta[j][i] = delta[j][i] * a[j][i] * (1 - a[j][i]);
 					}
 				}
 				
 				hiddenLayers.get(index).setDelta(MatrixUtils.createRealMatrix(delta));
+				
+				if (index == (layerSize - 1)) {                       // transposed @.@
+					bigDelta = hiddenLayers.get(index + 1).getDelta().transpose().
+							multiply(hiddenLayers.get(index).getA().transpose());
+							
+							
+				}
+				if (index < (layerSize - 1)) {
+					bigDelta = bigDelta.add(hiddenLayers.get(index + 1).getDelta().
+							multiply(hiddenLayers.get(index).getA().transpose()));				
+				}
+				
 			}	
 		}
 	}
@@ -90,5 +107,77 @@ public class NeuralNet {
 	}
 
 	public void predict(RealMatrix x) {
+	}
+	
+	public void printA(int index) {
+		System.out.println("matrix out: ");
+		int rowCount = 0;
+		int colCount = 0;
+		System.out.println("[");
+		for (double[] row: this.getHiddenLayers().
+								get(index).getA().getData()) {
+			rowCount++;
+			System.out.print("[");
+		for(double num: row) {
+			if (rowCount == 1) {
+				colCount++;
+			}
+			System.out.print(num + " ");
+			}
+		
+		System.out.println("]");
+		}
+		
+		System.out.println("]");
+		System.out.println("Shape of output: " + rowCount + " x " + colCount);
+
+	}
+	
+	public void printD(int index) {
+		System.out.println("matrix out: ");
+		int rowCount = 0;
+		int colCount = 0;
+		System.out.println("[");
+		for (double[] row: this.getHiddenLayers().
+								get(index).getDelta().getData()) {
+			rowCount++;
+			System.out.print("[");
+		for(double num: row) {
+			if (rowCount == 1) {
+				colCount++;
+			}
+			System.out.print(num + " ");
+			}
+		
+		System.out.println("]");
+		}
+		
+		System.out.println("]");
+		System.out.println("Shape of output: " + rowCount + " x " + colCount);
+
+	}
+	
+	public void printThetas(int index) {
+		System.out.println("matrix out: ");
+		int rowCount = 0;
+		int colCount = 0;
+		System.out.println("[");
+		for (double[] row: this.getHiddenLayers().
+								get(index).getThetas().getData()) {
+			rowCount++;
+			System.out.print("[");
+		for(double num: row) {
+			if (rowCount == 1) {
+				colCount++;
+			}
+			System.out.print(num + " ");
+			}
+		
+		System.out.println("]");
+		}
+		
+		System.out.println("]");
+		System.out.println("Shape of output: " + rowCount + " x " + colCount);
+
 	}
 }
