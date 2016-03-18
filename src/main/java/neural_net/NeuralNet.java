@@ -77,7 +77,7 @@ public class NeuralNet {
 				
 				for(int i = 0; i < delta[0].length; i++) {
 					for(int j = 0; j < delta.length; j++) {
-						delta[i][j] += delta[i][j] * a[i][j] * (1- a[i][j]);
+						delta[i][j] = delta[i][j] * a[i][j] * (1 - a[i][j]);
 					}
 				}
 				
