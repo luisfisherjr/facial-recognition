@@ -6,10 +6,24 @@ import java.util.ArrayList;
 
 public class Neuron {
 
+
+
+	// work in progress
+	public Neuron() {
+	}
+	
+	// work in progress
+	public Neuron(double bias) {
+	}
+	
 	// will eventually requires sigmoid function, sumation (rows * weights)
 	
 	// we need to decide on basic data structures
 	private RealMatrix input;
+	private double[] weights;
+	private double[] output;
+
+	
 	public RealMatrix getInput() {
 		return input;
 	}
@@ -34,16 +48,4 @@ public class Neuron {
 		this.output = output;
 	}
 
-	private double[] weights;
-	private double[] output;
-
-	// work in progress
-	public Neuron() {
-	}
-	
-	// work in progress
-	public Neuron(double bias) {
-	}
-
-	
 }

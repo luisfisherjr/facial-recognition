@@ -1,46 +1,91 @@
 package neural_net;
 
 import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.math3.linear.BlockRealMatrix;
+
+import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
-/*
- * InputLayer:  # of neurons in inputLayer is # of columns in trainingData
- * OutputLayer:  # of neurons in outputLayer is # of distinct values in labels
- */
-
 public class NeuralNet {
-	private InputLayer inputLayer;
-	private List<HiddenLayer> hiddenLayers;
-	public List<HiddenLayer> getHiddenLayers() {
+	
+	// do not need trainingX it is already
+	// in the first layer once net is created
+	private RealMatrix trainingX;
+	
+	private RealMatrix trainingY;
+	
+	// hidden layers and output layer
+	private ArrayList<Layer> hiddenLayers;
+	
+	// must have atleast 1 hidden layer
+	// later take in a int[] of length[hiddenCount] with values = number of neurons per layer
+	public NeuralNet(RealMatrix trainingX, int hiddenCount, double[] trainingY) {
+		
+		this.trainingX = trainingX;
+		double[][] in = new double[1][trainingY.length];
+		in[0] = trainingY;
+
+		this.trainingY = MatrixUtils.createRealMatrix(in);
+		
+		hiddenLayers = new ArrayList<Layer>();
+		
+		int i = 0;
+		for (; i < hiddenCount; i++ ) {
+			if (i == 0) hiddenLayers.add(new Layer(trainingX, 3, true));
+			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 3, true));
+		}
+		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));
+		
+		train();
+	}
+	
+	public ArrayList<Layer> getHiddenLayers() {
 		return hiddenLayers;
 	}
 
-
-	public void setHiddenLayers(List<HiddenLayer> hiddenLayers) {
+	public void setHiddenLayers(ArrayList<Layer> hiddenLayers) {
 		this.hiddenLayers = hiddenLayers;
 	}
-
-	private OutputLayer outputLayer;
-
-	public NeuralNet(RealMatrix trainingData) {
-		inputLayer = new InputLayer(trainingData);
+	
+	public void forwardPropagation() {
 		
-		//Currently only one hidden layer.  subject to change?
-		hiddenLayers = new ArrayList<HiddenLayer>();
-		hiddenLayers.add(new HiddenLayer(inputLayer.getOutput())); 
-		
-		HiddenLayer lastHiddenLayer = hiddenLayers.get(hiddenLayers.size()-1);
-		outputLayer = new OutputLayer(lastHiddenLayer.getOutput());
+		for (Layer l: hiddenLayers) {
+			l.calculate();
+		}
 	}
 	
-	
-	public List<Double> getHypothesis() {
-		return outputLayer.getHypothesis();
+	public void backwardPropagation() {
+		
+		int layerSize = hiddenLayers.size() - 1;
+		
+		//RealMatrix deltaAccum = null;
+		double[][] delta;
+		
+		for(int index = layerSize; index >= 0; index--) {
+			
+			if (index == layerSize ) {
+				hiddenLayers.get(layerSize).setDelta(hiddenLayers.get(index).getA().subtract(trainingY));
+			}
+			else {
+				
+				delta = hiddenLayers.get(index).getThetas().transpose().
+						multiply(hiddenLayers.get(layerSize + 1).getDelta()).getData();
+				
+				double[][] a = hiddenLayers.get(index).getA().getData();
+				
+				for(int i = 0; i < delta[0].length; i++) {
+					for(int j = 0; j < delta.length; j++) {
+						delta[i][j] += delta[i][j] * a[i][j] * (1- a[i][j]);
+					}
+				}
+				
+				hiddenLayers.get(index).setDelta(MatrixUtils.createRealMatrix(delta));
+			}	
+		}
 	}
-	
-	public OutputLayer getOutputLayer() {
-		return outputLayer;
+
+	public void train() {	
+	}
+
+	public void predict(RealMatrix x) {
 	}
 }
