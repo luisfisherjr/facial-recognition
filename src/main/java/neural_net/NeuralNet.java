@@ -233,8 +233,9 @@ public class NeuralNet {
 //			System.out.println(gradApprox);
 //			System.out.println(bigDelta);
 			
-//			System.out.println(gradApprox.equals(bigDelta) ? 
-//					"gradient checking pass" : "gradient checking fail");
+			//result printing
+			System.out.println(gradApprox.equals(bigDelta) ? 
+					"gradient checking pass" : "gradient checking fail");
 		}
 		
 		
@@ -242,7 +243,7 @@ public class NeuralNet {
 	
 	public RealMatrix j(RealMatrix x) {
 		RealMatrix term1 = (log(sigmoid(x)));
-		System.out.println(term1);
+//		System.out.println(term1);
 		
 		
 		return x;
