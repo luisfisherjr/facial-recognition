@@ -53,7 +53,7 @@ public class Layer {
 			for (int j = 0; j < featureCount; j++) {
 		
 				if (i == 0) tempWeights[j] = 1;
-				else tempWeights[j] = Math.random() / 100;
+				else tempWeights[j] = (Math.random()-0.5) * .2;
 			}
 
 			tempNeuron.setWeights(tempWeights);

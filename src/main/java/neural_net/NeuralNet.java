@@ -157,10 +157,50 @@ public class NeuralNet {
 		// just place holder
 		totalDifference -= .001;
 		
+		gradientD(0.5, 0.1);
+		
 		forwardPropagation();
 		}
 	}
 
+	
+	public void regularizeBigDeltas(double lamdba) {
+		for (int i = 1; i < layers.size(); i++) {
+			RealMatrix lambdaThetas = layers.get(i).getThetas().scalarMultiply(lamdba);
+			lambdaThetas.setRow(0, layers.get(i).getThetas().getRow(0));
+			bigDeltas.set(i, bigDeltas.get(i).add(lambdaThetas)); 
+		}
+	}
+	
+	
+	public void gradientD(double alpha, double lambda){
+		
+		regularizeBigDeltas(lambda);
+		for (int i = 1; i < layers.size(); i++){
+			//System.out.println("Thetas before...");
+			//printThetas(i);
+			RealMatrix originalT = layers.get(i).getThetas();
+			RealMatrix bigDelta = bigDeltas.get(i);
+			RealMatrix newThetas = originalT.subtract(bigDelta.scalarMultiply(alpha));
+			
+			if (i == layers.size()-1){
+				continue;
+			}
+			else{
+				double[] rowOnes = newThetas.getRow(0);
+				for(int j = 0; j < rowOnes.length; j++){
+					rowOnes[j] = 1;
+				}
+				newThetas.setRow(0, rowOnes);
+				layers.get(i).setThetas(newThetas);
+			}
+		}
+		
+		for (int i = 0; i < layers.size(); i++){
+			printThetas(i);
+		}
+	}
+	
 	/*
 	 *Trains Neural Net with given Features & Labels
 	 *Parameters: 

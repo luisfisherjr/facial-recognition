@@ -34,15 +34,17 @@ public class NeuralNetTest {
 	@Test
 	public void testForwardPropagation() {
 
-		int[] neurons = {7,3,5,7};
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 4, neurons, training_y);
-	
-		net.forwardPropagation();
+		int[] neurons = {5,3};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 2, neurons, training_y);
 	
 		net.backwardPropagation();
+		
+		net.gradientD(0.5, 0.1);
+		
+		net.forwardPropagation();
 	}
 	
-	
+	/*
 	@Test
 	public void testTrain() {
 
@@ -60,7 +62,7 @@ public class NeuralNetTest {
 		net.gradientCheck(0.001);
 		//net.train(100, .001);
 	}
-	
+	*/
 	/*
 	 * Writing some tests from "Examples and intuitions I" from course era slides
 	 * 
