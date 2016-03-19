@@ -1,5 +1,6 @@
 package neural_net;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.linear.BlockRealMatrix;
@@ -181,9 +182,99 @@ public class NeuralNet {
 		return labels;
 	}
 	
-	public void precisionScore(double[] yTraining, double[] yPredicted) {
-		// basically just compare the two
+	public double[] precisionScore(double[] yTraining, double[] yPredicted) {
+		if (yTraining.length != yPredicted.length) {
+			System.out.println("NeuralNet#precisionScore bad double arrays given");
+			System.out.println("yTraining: " + yTraining.length);
+			System.out.println("yPredicted: " + yPredicted.length);
+			throw new InvalidParameterException();
+		}
+		
+		double[] result  = new double[yTraining.length];
+		for (int i = 0; i < yTraining.length; i++)
+			result[i] = yTraining[i] - yPredicted[i];
+		return result;
 	}	
+	
+	public void gradientCheck(double epsilon) {
+		for (int i = 0; i < layers.size(); i++) {
+			Layer l = layers.get(i);
+			
+			RealMatrix thetaPlus = l.getThetas().scalarAdd(epsilon);
+			
+			RealMatrix thetaMinus = l.getThetas().scalarAdd(-epsilon);
+			
+			RealMatrix gradApprox = (j(thetaPlus)
+										.subtract(j(thetaMinus))
+										.scalarMultiply(1/2*epsilon));
+			
+			RealMatrix bigDelta = bigDeltas.get(i);
+			
+			if (gradApprox.getRowDimension() != bigDelta.getRowDimension()
+					|| gradApprox.getColumnDimension() != bigDelta.getColumnDimension()) {
+				System.out.println("gradApprox(" 
+					+ gradApprox.getRowDimension() + ","
+					+ gradApprox.getColumnDimension() + ")");
+				System.out.println("bigDelta(" 
+						+ bigDelta.getRowDimension() + ","
+						+ bigDelta.getColumnDimension() + ")");
+				System.out.println("Gradient Check dimension mismatch");
+				throw new InvalidParameterException();
+			}
+			
+			
+			//testing printing
+//			System.out.println("gradApprox(" 
+//					+ gradApprox.getRowDimension() + ","
+//					+ gradApprox.getColumnDimension() + ")");
+//			System.out.println("bigDelta(" 
+//						+ bigDelta.getRowDimension() + ","
+//						+ bigDelta.getColumnDimension() + ")");			
+//			System.out.println(gradApprox);
+//			System.out.println(bigDelta);
+			
+//			System.out.println(gradApprox.equals(bigDelta) ? 
+//					"gradient checking pass" : "gradient checking fail");
+		}
+		
+		
+	}
+	
+	public RealMatrix j(RealMatrix x) {
+		RealMatrix term1 = (log(sigmoid(x)));
+		System.out.println(term1);
+		
+		
+		return x;
+	}
+	
+	public RealMatrix sigmoid(RealMatrix matrix) {
+		for(int i = 0; i < matrix.getRowDimension(); i++) {
+			double[] row = matrix.getRow(i);
+			for(double d: row)
+				d = 1 / ( 1 + Math.exp(d));	
+			matrix.setRow(i, row);
+		}
+		return matrix;
+	}
+	
+	public RealMatrix log(RealMatrix matrix) {
+		for(int i = 0; i < matrix.getRowDimension(); i++) {
+			double[] row = matrix.getRow(i);
+			for(double d: row)
+				d = Math.log10(d);	
+			matrix.setRow(i, row);
+		}
+		return matrix;
+	}
+	
+	public RealMatrix generateMatrixOfOnes(int row, int col) {
+		double[][] array = new double[row][col];
+		for (int r = 0; r < row; r++)
+			for (int c = 0; c < col; c++)
+				array[r][c] = 1;
+		return new BlockRealMatrix(array);
+	}
 	
 	// below functions used for testing
 	

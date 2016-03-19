@@ -48,7 +48,16 @@ public class NeuralNetTest {
 
 		int[] neurons = {2,5,10,3,8,2};
 		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
+		
+		//net.train(100, .001);
+	}
 	
+	@Test
+	public void testGradient() {
+
+		int[] neurons = {2,5,10,3,8,2};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
+		net.gradientCheck(0.001);
 		//net.train(100, .001);
 	}
 	
