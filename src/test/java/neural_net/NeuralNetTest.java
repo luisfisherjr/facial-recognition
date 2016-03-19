@@ -21,12 +21,12 @@ public class NeuralNetTest {
 		training_y = new double[3];
 		
 		
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < 3; i++) {
 				training_x[i][j] = i * j;
 			}
-			training_y[i] = i;
-		}
+			training_y[j] = j;
+			}
 		
 		
 		//TODO
@@ -34,8 +34,8 @@ public class NeuralNetTest {
 	@Test
 	public void testForwardPropagation() {
 
-		int[] neurons = {2,5,10,3,8,2};
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
+		int[] neurons = {7,3,5,7};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 4, neurons, training_y);
 	
 		net.forwardPropagation();
 	
@@ -49,7 +49,7 @@ public class NeuralNetTest {
 		int[] neurons = {2,5,10,3,8,2};
 		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
 	
-		net.train(100, .001);
+		//net.train(100, .001);
 	}
 	
 	/*

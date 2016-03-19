@@ -2,22 +2,19 @@ package neural_net;
 
 import java.util.ArrayList;
 
+import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class NeuralNet {
 	
-	// do not need trainingX it is already
-	// in the first layer once net is created
-	// private RealMatrix trainingX;
-	
 	private RealMatrix trainingY;
 	
-	// accumulator
-	private RealMatrix bigDelta;
+	// accumulator to be used in cost function?
+	private ArrayList<RealMatrix> bigDeltas;
 	
 	// hidden layers and output layer
-	private ArrayList<Layer> hiddenLayers;
+	private ArrayList<Layer> layers;
 	
 	/*
 	 *Parameters:
@@ -35,72 +32,86 @@ public class NeuralNet {
 
 		this.trainingY = MatrixUtils.createRealMatrix(in);
 		
-		hiddenLayers = new ArrayList<Layer>();
-		
-		int i = 0;
-		
+		layers = new ArrayList<Layer>();
+		bigDeltas = new ArrayList<RealMatrix>();
 	
-		for (; i < hiddenCount; i++ ) {
-			if (i == 0) hiddenLayers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
-			else hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
-		}
-		hiddenLayers.add(new Layer(hiddenLayers.get(i - 1).getA(), 1, false));		
+		int rows;
+		int cols;
 		
-	}
-	
-	public ArrayList<Layer> getHiddenLayers() {
-		return hiddenLayers;
-	}
-
-	public void setHiddenLayers(ArrayList<Layer> hiddenLayers) {
-		this.hiddenLayers = hiddenLayers;
+		for (int i = 0; i <= hiddenCount; i++ ) {
+			if (i == 0) {
+				layers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
+			}
+			else if ((i > 0)&&( i < hiddenCount)) {
+				layers.add(new Layer(layers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
+			}
+			else {
+				layers.add(new Layer(layers.get(i - 1).getA(), 1, false));
+			}
+			
+			
+			// Big D are offest by 1 first bigD is empty, skip it!!
+			// it is input layer does not had value to set
+			
+			rows = layers.get(i).getThetas().getRowDimension();
+			cols = layers.get(i).getThetas().getColumnDimension();
+			bigDeltas.add(new BlockRealMatrix(rows, cols));
+		}	
 	}
 	
 	public void forwardPropagation() {
 		
-		hiddenLayers.get(0).calculate();
+		layers.get(0).calculate();
 			
-		for (int i = 1; i < hiddenLayers.size(); i++) {
-			hiddenLayers.get(i).setX(hiddenLayers.get(i - 1).getA());
-			hiddenLayers.get(i).calculate();
+		for (int i = 1; i < layers.size(); i++) {
+			layers.get(i).setX(layers.get(i - 1).getA());
+			layers.get(i).calculate();
 		}
 	}
 	
 	public void backwardPropagation() {
 		
-		int L = hiddenLayers.size() - 1;
+		int L = layers.size() - 1;
 		
 		double[][] delta;
+		
+		// used for testing
+		// int count = 0;
 
-		for(int index = L, count = 0; index >= 0; index--, count++) {
+		for(int index = L; index >= 0; index--) {
 			
 			if (index == L ) {                                                
-				hiddenLayers.get(index).setDelta(hiddenLayers.get(index).getA().subtract(trainingY));
-				
+				layers.get(index).setDelta(layers.get(index).getA().subtract(trainingY));
+				/*
+				 
 				// for testing
+				count++
 				System.out.println("L");
 				printDimensionA(index);
 				printDimensionY();
+				printDimensionThetas(index);
 				printDimensionDelta(index);
+				printDimensionBigDelta(index);
+				*/
+				
 			}
 			else {
 				
+				/*
 				// for testing
 				System.out.println();
 				System.out.println("L - " + count);
-				printDimensionThetas(index + 1);
-				printDimensionDelta(index + 1);
 				printDimensionA(index);
-				
-				
-				/*changing getThetas.tranpose() to getThetas() fixed it @.@ not sure why and I'm not sure
-				 * it is a legit fix*/
-				delta = (hiddenLayers.get(index + 1).getThetas()).
-						multiply(hiddenLayers.get(index + 1).getDelta()).getData();
-				                     
-				
-				
-				double[][] a = hiddenLayers.get(index).getA().getData();
+				printDimensionDelta(index + 1);
+				System.out.println();
+				printDimensionThetas(index);
+				printDimensionBigDelta(index);
+				*/
+			
+				delta = (layers.get(index + 1).getThetas()).transpose().
+						multiply(layers.get(index + 1).getDelta()).getData();
+
+				double[][] a = layers.get(index).getA().getData();
 				
 				for(int i = 0; i < delta.length; i++) {
 					for(int j = 0; j < delta[0].length; j++) {
@@ -108,20 +119,18 @@ public class NeuralNet {
 					}
 				}
 				
-				hiddenLayers.get(index).setDelta(MatrixUtils.createRealMatrix(delta));
+				layers.get(index).setDelta(MatrixUtils.createRealMatrix(delta));
 				
-				// for testing
-				printDimensionDelta(index);
+				if (index <= (L - 1)) {
 				
-				// I am not sure how bigDelta is suppose to accumulate need help
-				
-				if (index == (L - 1)) {
-					bigDelta = hiddenLayers.get(index + 1).getDelta().
-							multiply(hiddenLayers.get(index).getA().transpose());			
-				}
-				if (index < (L - 1)) {
-				//	bigDelta = bigDelta.add(hiddenLayers.get(index + 1).getDelta().
-				//			multiply(hiddenLayers.get(index).getA().transpose()));				
+					RealMatrix temp = layers.get(index + 1).getDelta().
+							multiply(layers.get(index).getA().transpose());
+					
+					
+					// used for testing
+					// System.out.print("testing: " + temp.getRowDimension() +","+ temp.getColumnDimension());
+					
+					bigDeltas.get(index + 1).add(temp);
 				}
 			}	
 		}
@@ -160,10 +169,10 @@ public class NeuralNet {
 	 */
 	public double[] predict(RealMatrix x) {
 		
-		getHiddenLayers().get(0).setX(x);
+		layers.get(0).setX(x);
 		forwardPropagation();
 		
-		double[] labels = getHiddenLayers().get(getHiddenLayers().size() - 1).getA().getRow(0);
+		double[] labels = layers.get(layers.size() - 1).getA().getRow(0);
 		
 		for(double d: labels) {
 			if (d > .5) d = 1;
@@ -174,15 +183,17 @@ public class NeuralNet {
 	
 	public void precisionScore(double[] yTraining, double[] yPredicted) {
 		// basically just compare the two
-	}
+	}	
+	
+	// below functions used for testing
+	
 	
 	public void printA(int index) {
 		System.out.println("matrix out: ");
 		int rowCount = 0;
 		int colCount = 0;
 		System.out.println("[");
-		for (double[] row: this.getHiddenLayers().
-								get(index).getA().getData()) {
+		for (double[] row: layers.get(index).getA().getData()) {
 			rowCount++;
 			System.out.print("[");
 		for(double num: row) {
@@ -205,8 +216,7 @@ public class NeuralNet {
 		int rowCount = 0;
 		int colCount = 0;
 		System.out.println("[");
-		for (double[] row: this.getHiddenLayers().
-								get(index).getDelta().getData()) {
+		for (double[] row: layers.get(index).getDelta().getData()) {
 			rowCount++;
 			System.out.print("[");
 		for(double num: row) {
@@ -229,8 +239,7 @@ public class NeuralNet {
 		int rowCount = 0;
 		int colCount = 0;
 		System.out.println("[");
-		for (double[] row: this.getHiddenLayers().
-								get(index).getThetas().getData()) {
+		for (double[] row: layers.get(index).getThetas().getData()) {
 			rowCount++;
 			System.out.print("[");
 		for(double num: row) {
@@ -248,24 +257,30 @@ public class NeuralNet {
 
 	}
 	
+
 	public void printDimensionA(int index) {
-		System.out.println("a^" + index + " : (" + hiddenLayers.get(index).getA().getRowDimension() + 
-				", " + hiddenLayers.get(index).getA().getColumnDimension() + ")");
+		System.out.println("a^" + index + " : (" + layers.get(index).getA().getRowDimension() + 
+				", " + layers.get(index).getA().getColumnDimension() + ")");
 	}
 	
 	public void printDimensionThetas(int index) {
-		System.out.println("t^" + index + " : (" + hiddenLayers.get(index).getThetas().getRowDimension() + 
-				", " + hiddenLayers.get(index).getThetas().getColumnDimension() + ")");
+		System.out.println("t^" + index + " : (" + layers.get(index).getThetas().getRowDimension() + 
+				", " + layers.get(index).getThetas().getColumnDimension() + ")");
+	}
+	
+	public void printDimensionBigDelta(int index) {
+		System.out.println("D^" + index + " : (" + bigDeltas.get(index).getRowDimension() + 
+				", " + bigDeltas.get(index).getColumnDimension() + ")");
 	}
 	
 	public void printDimensionDelta(int index) {
-		System.out.println("d^" + index + " : (" + hiddenLayers.get(index).getDelta().getRowDimension() + 
-				", " + hiddenLayers.get(index).getDelta().getColumnDimension() + ")");
+		System.out.println("d^" + index + " : (" + layers.get(index).getDelta().getRowDimension() + 
+				", " + layers.get(index).getDelta().getColumnDimension() + ")");
 	}
 	
 	public void printDimensionX(int index) {
-		System.out.println("x^" + index + " : (" + hiddenLayers.get(index).getX().getRowDimension() + 
-				", " + hiddenLayers.get(index).getX().getColumnDimension() + ")");
+		System.out.println("x^" + index + " : (" + layers.get(index).getX().getRowDimension() + 
+				", " + layers.get(index).getX().getColumnDimension() + ")");
 	}
 	
 	public void printDimensionY() {

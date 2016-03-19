@@ -64,20 +64,18 @@ public class Layer {
 
 	public void calculate() {
 
-		int rows = getX().getRowDimension();
-		int cols = getListOfNeurons().size();
+		int rows = getListOfNeurons().size();
+		int cols = getListOfNeurons().get(0).getWeights().length;
 
 		BlockRealMatrix thetas = new BlockRealMatrix(rows, cols);
 
-		for(int i = 0; i < cols; i++) {
+		for(int i = 0; i < rows; i++) {
 
-			thetas.setColumn(i, getListOfNeurons().get(i).getWeights());
+			thetas.setRow(i, getListOfNeurons().get(i).getWeights());
 		}
 		
 		this.thetas = thetas;
-
-		setA(sigmoid((thetas.transpose()).multiply(x)));
-		
+		setA(sigmoid(thetas.multiply(x)));		
 	}
 
 	public RealMatrix sigmoid(RealMatrix matrix) {
