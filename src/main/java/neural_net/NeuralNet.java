@@ -27,6 +27,10 @@ public class NeuralNet {
 	
 	private RealMatrix oldHyp;
 	
+	private RealMatrix[] trainCol;
+	
+	double[] trainingYAlt;
+	
 	/*
 	 *Parameters:
 	 *trainingX: Feature Matrix
@@ -35,6 +39,16 @@ public class NeuralNet {
 	 *trainingY: Labels
 	 */
 	public NeuralNet(RealMatrix trainingX, int[] neuronsPerHiddenLayer, double[] trainingY, double lambda, double alpha, double tolerance) {
+		
+		trainCol = new RealMatrix[trainingX.getColumnDimension()];
+		trainingYAlt = trainingY;
+		
+		RealMatrix colTemp;
+		for(int i = 0; i < trainingX.getColumnDimension(); i++) {
+			colTemp = new BlockRealMatrix(trainingX.getRowDimension(), 1);
+			colTemp.setColumn(0, trainingX.getColumn(i));
+			trainCol[i] = colTemp;
+		}
 		
 		this.tolerance = tolerance;
 		this.alpha = alpha;
@@ -54,7 +68,7 @@ public class NeuralNet {
 		
 		for (int i = 0; i <= neuronsPerHiddenLayer.length; i++ ) {
 			if (i == 0) {
-				layers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
+				layers.add(new Layer(trainCol[0], neuronsPerHiddenLayer[i], true));
 			}
 			else if ((i > 0)&&( i < neuronsPerHiddenLayer.length)) {
 				layers.add(new Layer(layers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
@@ -73,7 +87,7 @@ public class NeuralNet {
 		}	
 	}
 	
-	public void forwardPropagation() {
+	public void forwardPropagation(int colIndex) {
 		
 		for (Layer layer: layers){
 			double[][] layerMatrix = layer.getThetas().getData();
@@ -83,7 +97,7 @@ public class NeuralNet {
 		}
 		
 		
-		
+		layers.get(0).setX(trainCol[colIndex]);
 		layers.get(0).calculate();
 			
 		for (int i = 1; i < layers.size(); i++) {
@@ -92,7 +106,7 @@ public class NeuralNet {
 		}
 	}
 	
-	public void backwardPropagation() {
+	public void backwardPropagation(int colIndex) {
 		
 		int L = layers.size() - 1;
 		
@@ -104,7 +118,7 @@ public class NeuralNet {
 		for(int index = L; index >= 0; index--) {
 			
 			if (index == L ) {                                                
-				layers.get(index).setDelta(layers.get(index).getA().subtract(trainingY));
+				layers.get(index).setDelta(layers.get(index).getA().scalarAdd(trainingYAlt[colIndex] * - 1));
 				/*
 				 
 				// for testing
@@ -179,13 +193,20 @@ public class NeuralNet {
 				oldThetas.add(layers.get(i).getThetas().copy());
 			}
 			oldHyp = layers.get(layers.size() - 1).getA().copy();
-			backwardPropagation();
-		
-			// just place holder
-		
+			
+			for(RealMatrix m: bigDeltas) {
+				m.scalarMultiply(0);
+			}
+			
+			for(int i = 0; i < trainCol.length; i++) {
+				
+				forwardPropagation(i);
+				backwardPropagation(i);
+			}
+			
 			gradientD();
 			
-			forwardPropagation();
+			
 			go = converged();
 			counter++;
 		}
@@ -264,7 +285,7 @@ public class NeuralNet {
 	public double[] predict(RealMatrix x) {
 		
 		layers.get(0).setX(x);
-		forwardPropagation();
+		//forwardPropagation();
 		
 		double[] labels = layers.get(layers.size() - 1).getA().getRow(0);
 		
