@@ -14,39 +14,58 @@ import org.junit.Test;
 public class NeuralNetTest {
 	double[][] training_x;
 	double[] training_y;
-	ArrayList<Integer> result;
+	ArrayList<Double> result;
 	
-	@Before
-	public void setUp() {
+@Before
+  public void setUp() {
+
+    int m = 40000;
+    int n = 200;
+
+    training_x = new double[m][n];
+    training_y = new double[n];
+
+    result = new ArrayList<Double>();
+    for (int j = 0; j < n; j++) {
+      for (int i = 0; i < m; i++) {
+        training_x[i][j] = Math.random() - .5;
+      }
+
+      if (Math.random() > .5) training_y[j] = 1;
+      else training_y[j] = 0;
+
+      result.add(training_y[j]);	
+    }	
+  }
 	
-		int m = 4000;
-		int n = 200;
-		
-		training_x = new double[m][n];
-		training_y = new double[n];
-		
-		result = new ArrayList<Integer>();
-		for (int j = 0; j < n; j++) {
-			for (int i = 0; i < m; i++) {
-				training_x[i][j] = (1 + i) * (1 + j);
-			}
-			training_y[j] = (j + 1);
-			
-			result.add(j + 1);
-			}
-		
-		
-		//TODO
-	}
 	@Test
 	public void testForwardPropagation() {
 
-		int[] neurons = {5,3};
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), neurons, training_y, 0.0001, 0.02, 0.00000001);
-	
-		
+		int[] neurons = {25,5};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), neurons, training_y, 1, 2000, .001);
 		net.train();
+		System.out.println(net.printResult());
 		System.out.println(result);
+		
+		double correct_sum = 0;
+		for (int i = 0; i < result.size(); i++) {
+			if ((net.printResult().get(i) == 1.0 && result.get(i) == 1.0)
+					|| (net.printResult().get(i) == 0.0 && result.get(i) == 0.0)) {
+				correct_sum += 1;
+			}
+			
+		}
+		
+		System.out.println("Accuracy: " + correct_sum/result.size()*1.0);
+		
+		
+		
+		
+
+		//net.gradientCheck(0.001);
+		
+		
+		//System.out.println(result);
 		//net.backwardPropagation();
 		
 		//net.gradientD();
@@ -56,23 +75,32 @@ public class NeuralNetTest {
 	
 	/*
 	@Test
+	public void testGradient() {
+
+		int[] neurons = {2,5,10,3,8,2};
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), neurons, training_y, 0.0001, 0.02, 0.00000001);
+
+		net.train();
+		
+		
+		net.gradientCheck(0.001);
+		
+		//net.train(100, .001);
+	}*/
+	
+
+	
+	/*
+	@Test
 	public void testTrain() {
 
 		int[] neurons = {2,5,10,3,8,2};
 		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
 		
 		//net.train(100, .001);
-	}
+	}*/
 	
-	@Test
-	public void testGradient() {
 
-		int[] neurons = {2,5,10,3,8,2};
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 6, neurons, training_y);
-		net.gradientCheck(0.001);
-		//net.train(100, .001);
-	}
-	*/
 	/*
 	 * Writing some tests from "Examples and intuitions I" from course era slides
 	 * 

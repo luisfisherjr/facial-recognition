@@ -2,6 +2,7 @@ package neural_net;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -215,13 +216,6 @@ public class NeuralNet {
 	}
 	
 	
-	public void regularizeBigDeltas() {
-		for (int i = 1; i < layers.size(); i++) {
-			RealMatrix lambdaThetas = layers.get(i).getThetas().scalarMultiply(lambda);
-			lambdaThetas.setRow(0, layers.get(i).getThetas().getRow(0));
-			bigDeltas.set(i, bigDeltas.get(i).add(lambdaThetas)); 
-		}
-	}
 	
 	
 	public void gradientD(){
@@ -252,6 +246,18 @@ public class NeuralNet {
 			printThetas(i);
 		}
 		*/
+	}
+	
+	List<Double> printResult() {
+		Layer last = layers.get(layers.size()-1);
+		List<Double> integers = new ArrayList<Double>();
+		double[] aInside = last.getA().getRow(0);
+		
+		for(int i = 0; i < aInside.length; i++) {
+			if (aInside[i] > 0) integers.add(1.0);
+			else integers.add(0.0);
+		}
+		return integers;
 	}
 	
 	/*
@@ -293,12 +299,12 @@ public class NeuralNet {
 		for (int i = 0; i < layers.size(); i++) {
 			Layer l = layers.get(i);
 			
-			RealMatrix thetaPlus = l.getThetas().scalarAdd(epsilon);
+			RealMatrix aPlus = l.getA().scalarAdd(epsilon);
 			
-			RealMatrix thetaMinus = l.getThetas().scalarAdd(-epsilon);
+			RealMatrix aMinus = l.getA().scalarAdd(-epsilon);
 			
-			RealMatrix gradApprox = (j(thetaPlus)
-										.subtract(j(thetaMinus))
+			RealMatrix gradApprox = (j(aPlus, l.getThetas())
+										.subtract(j(aMinus, l.getThetas()))
 										.scalarMultiply(1/2*epsilon));
 			
 			RealMatrix bigDelta = bigDeltas.get(i);
@@ -330,16 +336,54 @@ public class NeuralNet {
 			System.out.println(gradApprox.equals(bigDelta) ? 
 					"gradient checking pass" : "gradient checking fail");
 		}
-		
-		
 	}
 	
-	public RealMatrix j(RealMatrix x) {
-		RealMatrix term1 = (log(sigmoid(x)));
-//		System.out.println(term1);
+	public RealMatrix j(RealMatrix a, RealMatrix thetas) {
+		RealMatrix result = new BlockRealMatrix(thetas.getRowDimension(), thetas.getColumnDimension());
+		
+		RealMatrix x = layers.get(0).getX();
+		RealMatrix y = trainingY;
 		
 		
-		return x;
+		int m = a.getRowDimension();
+		int k = y.getColumnDimension();
+		
+		System.out.println(m);
+		System.out.println(k);
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < k; j++){
+				double yEntry = y.getEntry(j, 0);
+				double xEntry = x.getEntry(j, i);
+					
+				double left = yEntry * Math.log(xEntry);
+				
+				double right = (1-yEntry) * Math.log(1 - xEntry);
+				
+				double resultEntry = left + right; // still needs regularization
+				
+				result.setEntry(j, i, resultEntry);
+				
+			}
+		}
+		
+		return result;
+	}
+	
+	public void regularizeBigDeltas() {
+		for (int i = 1; i < layers.size(); i++) {
+			double[][] tempMatrix = layers.get(i).getThetas().getData();
+			for (int j = 0; j < layers.get(i).getThetas().getRowDimension(); j++){
+				for (int k = 0; k < layers.get(i).getThetas().getColumnDimension(); k++){
+					double value = tempMatrix[j][k];
+					tempMatrix[j][k] = value * value;
+				}
+			}
+			RealMatrix a = new BlockRealMatrix(tempMatrix);
+			a.scalarMultiply(lambda/(2*layers.get(0).getThetas().getRowDimension()));
+			RealMatrix lambdaThetas = a;
+			lambdaThetas.setRow(0, layers.get(i).getThetas().getRow(0));
+			bigDeltas.set(i, bigDeltas.get(i).add(lambdaThetas)); 
+		}
 	}
 	
 	public RealMatrix sigmoid(RealMatrix matrix) {
