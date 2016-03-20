@@ -10,12 +10,22 @@ import org.apache.commons.math3.linear.RealMatrix;
 public class NeuralNet {
 	
 	private RealMatrix trainingY;
-	
+
 	// accumulator to be used in cost function?
 	private ArrayList<RealMatrix> bigDeltas;
 	
 	// hidden layers and output layer
 	private ArrayList<Layer> layers;
+	
+	private double lambda;
+	
+	private double alpha;
+	
+	private double tolerance;
+	
+	private ArrayList<RealMatrix> oldThetas;
+	
+	private RealMatrix oldHyp;
 	
 	/*
 	 *Parameters:
@@ -24,9 +34,12 @@ public class NeuralNet {
 	 *neuronsPerHiddenLayer: Number of Neurons per hidden layer
 	 *trainingY: Labels
 	 */
-	public NeuralNet(RealMatrix trainingX, int hiddenCount, int[] neuronsPerHiddenLayer, double[] trainingY) {
+	public NeuralNet(RealMatrix trainingX, int[] neuronsPerHiddenLayer, double[] trainingY, double lambda, double alpha, double tolerance) {
 		
-		if (neuronsPerHiddenLayer.length != hiddenCount) System.exit(1);
+		this.tolerance = tolerance;
+		this.alpha = alpha;
+		this.lambda = lambda;
+		if (neuronsPerHiddenLayer.length != neuronsPerHiddenLayer.length) System.exit(1);
 		
 		double[][] in = new double[1][trainingY.length];
 		in[0] = trainingY;
@@ -39,11 +52,11 @@ public class NeuralNet {
 		int rows;
 		int cols;
 		
-		for (int i = 0; i <= hiddenCount; i++ ) {
+		for (int i = 0; i <= neuronsPerHiddenLayer.length; i++ ) {
 			if (i == 0) {
 				layers.add(new Layer(trainingX, neuronsPerHiddenLayer[i], true));
 			}
-			else if ((i > 0)&&( i < hiddenCount)) {
+			else if ((i > 0)&&( i < neuronsPerHiddenLayer.length)) {
 				layers.add(new Layer(layers.get(i - 1).getA(), neuronsPerHiddenLayer[i], true));
 			}
 			else {
@@ -61,6 +74,15 @@ public class NeuralNet {
 	}
 	
 	public void forwardPropagation() {
+		
+		for (Layer layer: layers){
+			double[][] layerMatrix = layer.getThetas().getData();
+			for(int i = 0; i < layer.getListOfNeurons().size(); i++){
+				layer.getListOfNeurons().get(i).setWeights(layerMatrix[i]);
+			}
+		}
+		
+		
 		
 		layers.get(0).calculate();
 			
@@ -146,36 +168,65 @@ public class NeuralNet {
 	 *tolerance: How far difference is from actual results
 	 *Note: work in progress
 	 */
-	public void train(int passes, double tolerance) {
+	public void train() {
 		
-		double totalDifference = 1;
+		oldThetas = new ArrayList<RealMatrix>();
+		boolean go = true;
+		int counter = 0;
+		while (go){
+			
+			for (int i = 0; i < layers.size(); i++){
+				oldThetas.add(layers.get(i).getThetas().copy());
+			}
+			oldHyp = layers.get(layers.size() - 1).getA().copy();
+			backwardPropagation();
 		
-		for(int count = 0; (count < passes) && (tolerance <= totalDifference); count++) {
+			// just place holder
 		
-		backwardPropagation();
-		
-		// just place holder
-		totalDifference -= .001;
-		
-		gradientD(0.5, 0.1);
-		
-		forwardPropagation();
+			gradientD();
+			
+			forwardPropagation();
+			go = converged();
+			counter++;
 		}
+		System.out.println("Iterations -  " + counter);
+		
 	}
 
+	public boolean converged(){
+		RealMatrix m = oldHyp.subtract(layers.get(layers.size() - 1).getA());
+		double[][] matrixForm = m.getData();
+		for (int i = 0; i < m.getRowDimension(); i++){
+			for (int j = 0; j < m.getColumnDimension(); j++){
+				Math.pow(matrixForm[i][j], 2);
+			}
+		}
+		m = new BlockRealMatrix(matrixForm);
+		double divider = (2*layers.get(layers.size() - 1).getA().getColumnDimension());
+		m.scalarMultiply(divider);
+		double[] sumSquared = m.getRow(0);
+		double sum= 0.0;
+		for (double value: sumSquared){
+			sum += value;
+		}
+		
+		return sum > tolerance;
+		
+	}
 	
-	public void regularizeBigDeltas(double lamdba) {
+	
+	public void regularizeBigDeltas() {
 		for (int i = 1; i < layers.size(); i++) {
-			RealMatrix lambdaThetas = layers.get(i).getThetas().scalarMultiply(lamdba);
+			RealMatrix lambdaThetas = layers.get(i).getThetas().scalarMultiply(lambda);
 			lambdaThetas.setRow(0, layers.get(i).getThetas().getRow(0));
 			bigDeltas.set(i, bigDeltas.get(i).add(lambdaThetas)); 
 		}
 	}
 	
 	
-	public void gradientD(double alpha, double lambda){
+	public void gradientD(){
 		
-		regularizeBigDeltas(lambda);
+		regularizeBigDeltas();
 		for (int i = 1; i < layers.size(); i++){
 			//System.out.println("Thetas before...");
 			//printThetas(i);
@@ -191,14 +242,16 @@ public class NeuralNet {
 				for(int j = 0; j < rowOnes.length; j++){
 					rowOnes[j] = 1;
 				}
+				
 				newThetas.setRow(0, rowOnes);
 				layers.get(i).setThetas(newThetas);
 			}
 		}
-		
+		/*
 		for (int i = 0; i < layers.size(); i++){
 			printThetas(i);
 		}
+		*/
 	}
 	
 	/*
@@ -320,27 +373,21 @@ public class NeuralNet {
 	// below functions used for testing
 	
 	
-	public void printA(int index) {
-		System.out.println("matrix out: ");
-		int rowCount = 0;
-		int colCount = 0;
+	public void printMatrix(RealMatrix matrix) {
+		
+		System.out.println("matrix: ");
+		int rowCount = matrix.getRowDimension();
+		int colCount = matrix.getColumnDimension();
 		System.out.println("[");
-		for (double[] row: layers.get(index).getA().getData()) {
-			rowCount++;
+		for (int i = 0; i < rowCount; i++) {
 			System.out.print("[");
-		for(double num: row) {
-			if (rowCount == 1) {
-				colCount++;
+			for (double num: matrix.getRow(i)) {
+				System.out.print(num + " ");
 			}
-			System.out.print(num + " ");
-			}
-		
-		System.out.println("]");
+			System.out.println("]");
 		}
-		
 		System.out.println("]");
 		System.out.println("Shape of output: " + rowCount + " x " + colCount);
-
 	}
 	
 	public void printD(int index) {
@@ -418,5 +465,9 @@ public class NeuralNet {
 	public void printDimensionY() {
 		System.out.println("y   : (" + trainingY.getRowDimension() + 
 				", " + trainingY.getColumnDimension() + ")");
+	}
+	
+	public ArrayList<Layer> getLayers() {
+		return layers;
 	}
 }

@@ -14,18 +14,25 @@ import org.junit.Test;
 public class NeuralNetTest {
 	double[][] training_x;
 	double[] training_y;
+	ArrayList<Integer> result;
 	
 	@Before
 	public void setUp() {
-		training_x = new double[3][3];
-		training_y = new double[3];
+	
+		int m = 4000;
+		int n = 200;
 		
+		training_x = new double[m][n];
+		training_y = new double[n];
 		
-		for (int j = 0; j < 3; j++) {
-			for (int i = 0; i < 3; i++) {
-				training_x[i][j] = i * j;
+		result = new ArrayList<Integer>();
+		for (int j = 0; j < n; j++) {
+			for (int i = 0; i < m; i++) {
+				training_x[i][j] = (1 + i) * (1 + j);
 			}
-			training_y[j] = j;
+			training_y[j] = (j + 1);
+			
+			result.add(j + 1);
 			}
 		
 		
@@ -35,13 +42,16 @@ public class NeuralNetTest {
 	public void testForwardPropagation() {
 
 		int[] neurons = {5,3};
-		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), 2, neurons, training_y);
+		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), neurons, training_y, 0.0001, 0.02, 0.00000001);
 	
-		net.backwardPropagation();
 		
-		net.gradientD(0.5, 0.1);
+		net.train();
+		System.out.println(result);
+		//net.backwardPropagation();
 		
-		net.forwardPropagation();
+		//net.gradientD();
+		
+		//net.forwardPropagation();
 	}
 	
 	/*
