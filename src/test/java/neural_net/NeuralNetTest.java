@@ -14,6 +14,7 @@ import org.junit.Test;
 public class NeuralNetTest {
 	double[][] training_x;
 	double[] training_y;
+	double[][] test_x;
 	ArrayList<Double> result;
 	
 @Before
@@ -24,6 +25,9 @@ public class NeuralNetTest {
 
     training_x = new double[m][n];
     training_y = new double[n];
+    test_x = new double[m][1];
+    
+    
 
     result = new ArrayList<Double>();
     for (int j = 0; j < n; j++) {
@@ -36,6 +40,9 @@ public class NeuralNetTest {
 
       result.add(training_y[j]);	
     }	
+    
+    for (int i = 0; i < m; i++)
+    	test_x[i][0] = Math.random() - .5;
   }
 	
 	@Test
@@ -44,13 +51,13 @@ public class NeuralNetTest {
 		int[] neurons = {25,5};
 		NeuralNet net = new NeuralNet(new BlockRealMatrix(training_x), neurons, training_y, 1, 2000, .001);
 		net.train();
-		System.out.println(net.printResult());
+		System.out.println(net.hypothesis());
 		System.out.println(result);
 		
 		double correct_sum = 0;
 		for (int i = 0; i < result.size(); i++) {
-			if ((net.printResult().get(i) == 1.0 && result.get(i) == 1.0)
-					|| (net.printResult().get(i) == 0.0 && result.get(i) == 0.0)) {
+			if ((net.hypothesis().get(i) == 1.0 && result.get(i) == 1.0)
+					|| (net.hypothesis().get(i) == 0.0 && result.get(i) == 0.0)) {
 				correct_sum += 1;
 			}
 			
@@ -59,7 +66,12 @@ public class NeuralNetTest {
 		System.out.println("Accuracy: " + correct_sum/result.size()*1.0);
 		
 		
-		
+//		System.out.println();
+//		System.out.println("test_x: " + twoDimArrayToString(test_x));
+//		System.out.println("prediction: " + oneDimArrayToString(net.predict(new BlockRealMatrix(test_x))));
+//		
+//		
+//		
 		
 
 		//net.gradientCheck(0.001);
@@ -71,6 +83,35 @@ public class NeuralNetTest {
 		//net.gradientD();
 		
 		//net.forwardPropagation();
+	}
+	
+	private String oneDimArrayToString(double[] array) {
+		String result = "[";
+		for (int i = 0; i < array.length; i++) {
+			result += (Double.toString(array[i]));
+			if (i == array.length - 1) continue;
+			else result += ",";
+		}
+		result += "]";
+		return result;
+	}
+	
+	private String twoDimArrayToString(double[][] two) {
+		String result = "[";
+		for (int i = 0; i < two.length; i++) {
+			result += "[";
+			for (int j = 0; j < two[0].length; j++) {
+				result += (Double.toString(two[i][j]));
+				if (j == two[0].length - 1) continue;
+				else result += ",";
+				
+			}
+			result += "]";
+			if (i == two.length - 1) continue;
+			else result += ",";
+		}
+		result += "]";
+		return result;
 	}
 	
 	/*

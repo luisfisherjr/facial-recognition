@@ -248,7 +248,7 @@ public class NeuralNet {
 		*/
 	}
 	
-	List<Double> printResult() {
+	public List<Double> hypothesis() {
 		Layer last = layers.get(layers.size()-1);
 		List<Double> integers = new ArrayList<Double>();
 		double[] aInside = last.getA().getRow(0);
